@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru" data-screen="lobby">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Шахматы</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    try {
+      var raw = localStorage.getItem('chess-session-v1');
+      var saved = raw ? JSON.parse(raw) : null;
+      if (saved && saved.inGame) document.documentElement.dataset.screen = 'game';
+    } catch (error) { /* пустое хранилище не мешает входу */ }
+  </script>
+</head>
+<body>
+  <section id="lobby" aria-labelledby="lobby-title">
+    <form id="join-form" class="card">
+      <p class="eyebrow">партия по сети</p>
+      <h1 id="lobby-title">Шахматы</h1>
+      <p class="lead">Обычная партия на двоих. Ходы сразу видны сопернику, а доска не пропадает после перезапуска сервера.</p>
+      <label>Имя
+        <input id="name-input" name="name" maxlength="16" autocomplete="nickname" required placeholder="Например, Анна">
+      </label>
+      <label>Код партии
+        <input id="room-input" name="room" maxlength="12" autocapitalize="characters" required placeholder="КЛУБ-17">
+      </label>
+      <p id="lobby-error" class="form-error" role="alert"></p>
+      <div class="row">
+        <button class="primary" type="submit">Сесть за доску</button>
+        <button id="random-room" type="button">Другой код</button>
+      </div>
+      <ol class="rules">
+        <li>Первый вошедший играет белыми, второй — чёрными. Остальные смотрят.</li>
+        <li>Рядом с доской общая записка. Если двое записали текст из одной версии, можно оставить чужой или записать свой.</li>
+        <li>Без сети ход сохраняется на этом устройстве и уходит на сервер после связи.</li>
+      </ol>
+    </form>
+  </section>
+
+  <section id="game" aria-label="Шахматная доска">
+    <header class="topbar">
+      <div class="brand">
+        <p class="eyebrow">партия</p>
+        <h1 id="room-label">Шахматы</h1>
+      </div>
+      <div class="top-actions">
+        <p id="status" class="status" role="status">Соединение…</p>
+        <p id="queue" class="queue"></p>
+        <button id="copy-link" type="button">Ссылка</button>
+        <button id="leave" type="button">Выйти</button>
+      </div>
+    </header>
+    <div class="layout">
+      <div class="stage">
+        <div id="board-wrap" class="board-wrap"></div>
+      </div>
+      <aside>
+        <section class="panel">
+          <h2 id="turn-title">Партия</h2>
+          <p id="turn-line" class="muted"></p>
+          <div class="row wrap">
+            <button id="seat-white" type="button">Сесть белыми</button>
+            <button id="seat-black" type="button">Сесть чёрными</button>
+            <button id="resign" type="button">Сдаться</button>
+          </div>
+        </section>
+        <section class="panel note-panel">
+          <h2>Записка</h2>
+          <p id="note-meta" class="muted">Пока пусто. Текст виден всем в партии.</p>
+          <textarea id="note-input" maxlength="500" rows="5" placeholder="Общая заметка к партии"></textarea>
+          <div class="row">
+            <button id="note-save" class="primary" type="button">Записать</button>
+          </div>
+        </section>
+        <section class="panel">
+          <h2>За доской</h2>
+          <ul id="players" class="people"></ul>
+        </section>
+        <section class="panel journal-panel">
+          <h2>Партия</h2>
+          <ol id="moves" class="moves"></ol>
+          <ul id="log" class="journal" aria-live="polite"></ul>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  <div id="modal" class="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <p id="modal-kicker" class="eyebrow">конфликт</p>
+      <h2 id="modal-title">Уже изменилось</h2>
+      <div id="modal-body"></div>
+      <div class="row wrap">
+        <button id="modal-keep" type="button">Оставить ход на сервере</button>
+        <button id="modal-replay" class="primary" type="button">Повторить мой ход</button>
+      </div>
+    </div>
+  </div>
+  <div id="promo" class="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="promo-title">
+      <p class="eyebrow">превращение</p>
+      <h2 id="promo-title">Во что превратить пешку?</h2>
+      <div id="promo-choices" class="promo"></div>
+    </div>
+  </div>
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <script src="chess.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>
